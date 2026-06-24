@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DevOps Dashboard</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #05111f;
+      --surface: #0d2035;
+      --border: #1e3a5c;
+      --teal: #0d9488;
+      --cyan: #22d3ee;
+      --green: #22c55e;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --text: #f0f9ff;
+      --muted: #7ca9c2;
+    }
+
+    body {
+      font-family: "Inter", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* Header */
+    header {
+      background: var(--surface);
+      border-bottom: 2px solid var(--teal);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .whale {
+      font-size: 2rem;
+    }
+
+    header h1 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      background: linear-gradient(
+        90deg,
+        var(--cyan),
+        var(--teal)
+      );
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .badge {
+      margin-left: auto;
+      background: var(--teal);
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    /* Layout */
+    main {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+
+    /* Status Banner */
+    .status-banner {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem 2rem;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .status-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 8px var(--green);
+    }
+
+    .status-dot.loading {
+      background: var(--amber);
+      box-shadow: 0 0 8px var(--amber);
+    }
+
+    .status-dot.error {
+      background: var(--red);
+      box-shadow: 0 0 8px var(--red);
+    }
+
+    .status-text h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .status-text p {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-top: 0.2rem;
+    }
+
+    .status-meta {
+      margin-left: auto;
+      text-align: right;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    .status-meta strong {
+      display: block;
+      color: var(--cyan);
+      font-size: 1.1rem;
+    }
+
+    /* Cards */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: border-color 0.2s ease, transform 0.15s ease;
+    }
+
+    .card:hover {
+      border-color: var(--teal);
+      transform: translateY(-2px);
+    }
+
+    .card-icon {
+      font-size: 2rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+
+    .card p {
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.6;
+    }
+
+    .value {
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin: 0.5rem 0;
+      color: var(--cyan);
+    }
+
+    /* Data Section */
+    .data-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .data-section h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      text-align: left;
+      padding: 0.6rem 1rem;
+      color: var(--muted);
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 0.15rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+
+    .pill.green {
+      background: #14532d;
+      color: #86efac;
+    }
+
+    .pill.blue {
+      background: #1e3a5f;
+      color: #93c5fd;
+    }
+
+    .pill.amber {
+      background: #78350f;
+      color: #fcd34d;
+    }
+
+    /* Form */
+    .form-row {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      min-width: 220px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.6rem 1rem;
+      color: var(--text);
+      font-size: 0.9rem;
+    }
+
+    input[type="text"]:focus {
+      outline: none;
+      border-color: var(--teal);
+    }
+
+    button {
+      background: var(--teal);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 0.6rem 1.4rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    button:hover {
+      opacity: 0.85;
+    }
+
+    button:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    pre {
+      margin-top: 1rem;
+      background: var(--bg);
+      padding: 1rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      color: var(--cyan);
+      max-height: 250px;
+      overflow-y: auto;
+      display: none;
+      white-space: pre-wrap;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--muted);
+      font-size: 0.85rem;
+      border-top: 1px solid var(--border);
+    }
+
+    footer a {
+      color: var(--cyan);
+      text-decoration: none;
+    }
+
+    @media (max-width: 768px) {
+      header {
+        flex-wrap: wrap;
+      }
+
+      .status-banner {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .status-meta {
+        margin-left: 0;
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <span class="whale">🐋</span>
+    <h1>DevOps Capstone Dashboard</h1>
+    <span class="badge" id="env-badge">Loading...</span>
+  </header>
+
+  <main>
+    <div class="status-banner">
+      <div class="status-dot loading" id="status-dot"></div>
+
+      <div class="status-text">
+        <h2 id="status-title">Connecting to API...</h2>
+        <p id="status-sub">Checking backend health</p>
+      </div>
+
+      <div class="status-meta">
+        <strong id="uptime-val">—</strong>
+        <span>Uptime</span>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="card-icon">🐳</div>
+        <h3>API Version</h3>
+        <div class="value" id="api-version">—</div>
+        <p>Backend Node.js service version</p>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">🗄️</div>
+        <h3>Database</h3>
+        <div class="value" id="db-status">—</div>
+        <p>PostgreSQL connection status</p>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">⚡</div>
+        <h3>Students</h3>
+        <div class="value" id="student-count">—</div>
+        <p>Records in database</p>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">🚀</div>
+        <h3>Hostname</h3>
+        <div
+          class="value"
+          id="hostname"
+          style="font-size:1rem;padding-top:.5rem"
+        >
+          —
+        </div>
+        <p>Container running the service</p>
+      </div>
+    </div>
+
+    <div class="data-section">
+      <h2>🎓 Student Registry — Live from PostgreSQL</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Course</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+
+        <tbody id="student-table">
+          <tr>
+            <td colspan="4" style="text-align:center;padding:2rem">
+              Loading...
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="form-row">
+        <input
+          type="text"
+          id="new-name"
+          placeholder="Student name..."
+        />
+
+        <input
+          type="text"
+          id="new-course"
+          placeholder="Course (e.g. DevOps 101)"
+        />
+
+        <button id="add-btn" onclick="addStudent()">
+          Add Student
+        </button>
+      </div>
+    </div>
+
+    <div class="data-section">
+      <h2>🔌 Live API Endpoints</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Method</th>
+            <th>Endpoint</th>
+            <th>Description</th>
+            <th>Try It</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr>
+            <td><span class="pill green">GET</span></td>
+            <td>/api/health</td>
+            <td>Health check with DB status</td>
+            <td>
+              <button onclick="tryEndpoint('/api/health')">
+                ▶ Run
+              </button>
+            </td>
+          </tr>
+
+          <tr>
+            <td><span class="pill green">GET</span></td>
+            <td>/api/students</td>
+            <td>List all students</td>
+            <td>
+              <button onclick="tryEndpoint('/api/students')">
+                ▶ Run
+              </button>
+            </td>
+          </tr>
+
+          <tr>
+            <td><span class="pill blue">POST</span></td>
+            <td>/api/students</td>
+            <td>Create a new student</td>
+            <td><span class="pill amber">form above</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <pre id="api-output"></pre>
+    </div>
+  </main>
+
+  <footer>
+    Built with 🐋 Docker Compose &amp; ☁ AWS EC2 |
+    <a href="/api/health" target="_blank">/api/health</a> |
+    DevOps Fundamentals Lab
+  </footer>
+
+  <script>
+    const api = async (path) => {
+      const response = await fetch(path);
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      return response.json();
+    };
+
+    async function loadDashboard() {
+      try {
+        const health = await api("/api/health");
+
+        document.getElementById("status-dot").className = "status-dot";
+
+        document.getElementById("status-title").textContent =
+          "All Systems Operational";
+
+        document.getElementById("status-sub").textContent =
+          "API and database are healthy";
+
+        document.getElementById("api-version").textContent =
+          health.version || "1.0.0";
+
+        document.getElementById("db-status").textContent =
+          health.db ? "✅ Online" : "❌ Down";
+
+        document.getElementById("uptime-val").textContent =
+          `${Math.floor((health.uptime || 0) / 60)}m`;
+
+        document.getElementById("hostname").textContent =
+          health.hostname || "Unknown";
+
+        document.getElementById("env-badge").textContent =
+          health.env || "production";
+      } catch (error) {
+        console.error(error);
+
+        document.getElementById("status-dot").className =
+          "status-dot error";
+
+        document.getElementById("status-title").textContent =
+          "API Unreachable";
+
+        document.getElementById("status-sub").textContent =
+          error.message;
+      }
+
+      await loadStudents();
+    }
+
+    async function loadStudents() {
+      try {
+        const data = await api("/api/students");
+
+        document.getElementById("student-count").textContent =
+          data.length;
+
+        document.getElementById("student-table").innerHTML =
+          data.length
+            ? data
+                .map(
+                  (student) => `
+                    <tr>
+                      <td>${student.id}</td>
+                      <td>${student.name}</td>
+                      <td>${student.course}</td>
+                      <td>
+                        <span class="pill green">
+                          Enrolled
+                        </span>
+                      </td>
+                    </tr>
+                  `
+                )
+                .join("")
+            : `
+                <tr>
+                  <td colspan="4"
+                    style="color:var(--muted);text-align:center">
+                    No students yet — add one below!
+                  </td>
+                </tr>
+              `;
+      } catch (error) {
+        console.error("Students error:", error);
+
+        document.getElementById("student-table").innerHTML = `
+          <tr>
+            <td colspan="4"
+              style="color:#EF4444;text-align:center">
+              Failed to load students
+            </td>
+          </tr>
+        `;
+      }
+    }
+
+    async function addStudent() {
+      const name =
+        document.getElementById("new-name").value.trim();
+
+      const course =
+        document.getElementById("new-course").value.trim();
+
+      if (!name || !course) {
+        alert("Please fill in both fields");
+        return;
+      }
+
+      const button = document.getElementById("add-btn");
+      button.disabled = true;
+
+      try {
+        const response = await fetch("/api/students", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            name,
+            course
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error(
+            `Failed to create student (${response.status})`
+          );
+        }
+
+        document.getElementById("new-name").value = "";
+        document.getElementById("new-course").value = "";
+
+        await loadStudents();
+      } catch (error) {
+        console.error(error);
+        alert(error.message);
+      } finally {
+        button.disabled = false;
+      }
+    }
+
+    async function tryEndpoint(path) {
+      const output = document.getElementById("api-output");
+
+      output.style.display = "block";
+      output.textContent = "Loading...";
+
+      try {
+        const data = await api(path);
+
+        output.textContent = JSON.stringify(
+          data,
+          null,
+          2
+        );
+      } catch (error) {
+        output.textContent = `Error: ${error.message}`;
+      }
+    }
+
+    loadDashboard();
+
+    setInterval(() => {
+      loadDashboard();
+    }, 30000);
+  </script>
+</body>
+</html>
