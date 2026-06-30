@@ -19,7 +19,7 @@ services:
       DB_HOST:     postgres
       DB_NAME:     appdb
       DB_USER:     appuser
-      DB_PASSWORD: \${DB_PASSWORD}
+      DB_PASSWORD: ${DB_PASSWORD}
       NODE_ENV:    production
     depends_on:
       postgres:
@@ -31,7 +31,7 @@ services:
     environment:
       POSTGRES_DB:       appdb
       POSTGRES_USER:     appuser
-      POSTGRES_PASSWORD: \${DB_PASSWORD}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
