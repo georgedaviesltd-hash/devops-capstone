@@ -14,7 +14,7 @@ services:
  
   api:
     # Image built by GitHub Actions and pushed to GHCR
-    image: ghcr.io/\${GITHUB_USERNAME}/devops-capstone-api:\${IMAGE_TAG:-latest}
+    image: ghcr.io/${GITHUB_USERNAME}/devops-capstone-api:${IMAGE_TAG:-latest}
     environment:
       DB_HOST:     postgres
       DB_NAME:     appdb
