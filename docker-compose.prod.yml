@@ -7,9 +7,9 @@ services:
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/frontend:/usr/share/nginx/html:ro
-    depends_on:
-      api:
-        condition: service_healthy
+    #depends_on:
+      #api:
+        #condition: service_healthy
     restart: unless-stopped
  
   api:
